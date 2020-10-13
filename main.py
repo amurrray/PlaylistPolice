@@ -5,8 +5,8 @@ from secrets import CLIENT_ID, CLIENT_SECRETS, REDIRECT_URL, USERNAME, WHITELIST
 
 def getToken():
     scope = 'user-read-playback-state user-modify-playback-state playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private'
-    return spotipy.util.prompt_for_user_token(USERNAME, scope, client_id=CLIENT_ID,
-                                              client_secret=CLIENT_SECRETS, redirect_uri=REDIRECT_URL)
+    print(spotipy.util.prompt_for_user_token(USERNAME, scope, client_id=CLIENT_ID, client_secret=CLIENT_SECRETS, redirect_uri=REDIRECT_URL))
+    return spotipy.util.prompt_for_user_token(USERNAME, scope, client_id=CLIENT_ID, client_secret=CLIENT_SECRETS, redirect_uri=REDIRECT_URL)
 
 def get_playlist_tracks(username,playlist_id):
     results = sp.user_playlist_tracks(username,playlist_id)
