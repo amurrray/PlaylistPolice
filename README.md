@@ -1,6 +1,6 @@
 # PlaylistPolice
 
-Allows you to whitelist spotify users for your collaborative playlists
+Allows you to whitelist Spotify users for your collaborative playlists.
 
 ## Usage
 Once the repository is cloned, read and follow the secrets.format.py file.
