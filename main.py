@@ -21,10 +21,7 @@ if __name__ == "__main__":
     sp = spotipy.Spotify(auth=token)
     current = sp.current_playback()
 
-    # inputPlaylistURI = input("input spotify playlist URI: ")
-    # inputPlaylistURI = 'spotify:playlist:3yQnagTU5X4V2HoFSA2gv6' #lithium
-    inputPlaylistURI = 'spotify:playlist:7AMG51HALKtdLiInJUIuiO' #collab test
-    # inputPlaylistURI = 'spotify:playlist:2JIEJ8sxLJfBC8YSGznJVk' #non-collab test
+    inputPlaylistURI = input("input spotify playlist URI: ")
     
     # gets playlist data
     playlistTracks = get_playlist_tracks(USERNAME,inputPlaylistURI)
@@ -35,7 +32,7 @@ if __name__ == "__main__":
         pickle.load(open(str(Path(__file__).resolve().parents[0]) + '/playlist' + str(results['id']) + '.pkl', 'rb'))
 
     except FileNotFoundError:
-        pickle.dump([], open('/playlist' + str(results['id']) + '.pkl', 'wb')) 
+        pickle.dump([], open('playlist' + str(results['id']) + '.pkl', 'wb'))  
 
     # checks if collaborative playlist
     if results['collaborative'] == True:
@@ -81,7 +78,6 @@ if __name__ == "__main__":
 
             for track in newestTrackList:
                 trackList.remove(track)
-            
             sp.user_playlist_add_tracks(USERNAME, inputPlaylistURI, trackList)
         
         else:
@@ -102,9 +98,3 @@ if __name__ == "__main__":
 
     else:
         print('not a collaborative playlist')
-
-
-
-# to view dict
-# trackDict = pickle.load(open(str(Path(__file__).resolve().parents[0]) + '/playlist' + str(results['id']) + '.pkl', 'rb'))
-# print(trackDict)  
