@@ -38,7 +38,6 @@ def add_playlist_tracks(username,playlist_id,trackList):
             print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
             print(bcolors.HEADER + 'type A' + bcolors.ENDC)
             for i in (range(int(len(trackList) / 100) + 1)):
-                # print(str(i) + ' of ' + str(int(len(trackList) / 100)))
                 cutTrackList = trackList[n:n+100]
                 print(bcolors.OKGREEN + str(i+1) + ' of ' + str(int(len(trackList) / 100) + 1) + bcolors.ENDC)
                 print(bcolors.OKGREEN + str(len(trackList)) + ' total songs' + bcolors.ENDC)
@@ -72,20 +71,11 @@ def add_playlist_tracks(username,playlist_id,trackList):
         print(bcolors.OKGREEN + 'added ' + str(len(trackList)) + ' songs from backup' + bcolors.ENDC)
         print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
 
-    
+token=getToken()
+sp = spotipy.Spotify(auth=token)
+inputPlaylistURI = PLAYLIST_URI
 
-if __name__ == "__main__":
-    
     while True:    
-        token=getToken()
-        sp = spotipy.Spotify(auth=token)
-        
-        #inputPlaylistURI = input("input spotify playlist URI: ")
-        inputPlaylistURI = PLAYLIST_URI
-        
-    
-    #    try:
-          # gets playlist data
         playlistTracks = get_playlist_tracks(USERNAME,inputPlaylistURI)
         results = sp.playlist(inputPlaylistURI)
             
@@ -165,3 +155,7 @@ if __name__ == "__main__":
         est = timezone('EST')
         print(bcolors.OKBLUE + 'filtered @ '+str(datetime.now(est)+timedelta(hours=1)) + bcolors.ENDC)
         time.sleep(300)         
+    
+
+if __name__ == "__main__":
+    main()
