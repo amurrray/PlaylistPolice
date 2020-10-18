@@ -1,9 +1,23 @@
 import time
-import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 import pickle
+import requests
 from pathlib import Path
 import spotipy
 from secrets import CLIENT_ID, CLIENT_SECRETS, REDIRECT_URL, USERNAME, WHITELISTED_USERS, PLAYLIST_URI
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 
 def getToken():
     scope = 'user-read-playback-state user-modify-playback-state playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private'
@@ -18,60 +32,60 @@ def get_playlist_tracks(username,playlist_id):
     return tracks
 
 def add_playlist_tracks(username,playlist_id,trackList):
-
     if len(trackList) > 100:
         if len(trackList) / 100 > 1:
             n=0
-            print('------------------------')
-            print('type A')
+            print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
+            print(bcolors.HEADER + 'type A' + bcolors.ENDC)
             for i in (range(int(len(trackList) / 100) + 1)):
                 # print(str(i) + ' of ' + str(int(len(trackList) / 100)))
                 cutTrackList = trackList[n:n+100]
-                print(str(i+1) + ' of ' + str(int(len(trackList) / 100) + 1))
-                print(str(len(trackList)) + ' total songs')
+                print(bcolors.OKGREEN + str(i+1) + ' of ' + str(int(len(trackList) / 100) + 1) + bcolors.ENDC)
+                print(bcolors.OKGREEN + str(len(trackList)) + ' total songs' + bcolors.ENDC)
                 # print(cutTrackList)
                 sp.user_playlist_add_tracks(username, inputPlaylistURI, cutTrackList)
                 n+=100
-                print('added ' + str(len(cutTrackList)) + ' songs from backup')
-                print('------------------------')
+                print(bcolors.OKGREEN + 'added ' + str(len(cutTrackList)) + ' songs from backup')
+                print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
 
         else:
             n=0
-            print('------------------------')
-            print('type B')
+            print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
+            print(bcolors.HEADER + 'type B' + bcolors.ENDC)
             for i in (range(int(len(trackList) / 100))):
                 cutTrackList = trackList[n:n+100]
-                print(str(i+1) + ' of ' + str(int(len(trackList) / 100)))
-                print(str(len(trackList)) + ' total songs')
+                print(bcolors.OKGREEN + str(i+1) + ' of ' + str(int(len(trackList) / 100)) + bcolors.ENDC)
+                print(bcolors.OKGREEN + str(len(trackList)) + ' total songs' + bcolors.ENDC)
                 # print(cutTrackList)
                 sp.user_playlist_add_tracks(username, inputPlaylistURI, cutTrackList)
                 n+=100
-                print('added ' + str(len(cutTrackList)) + ' songs from backup')
-                print('------------------------')
+                print(bcolors.OKGREEN + 'added ' + str(len(cutTrackList)) + ' songs from backup' + bcolors.ENDC)
+                print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
 
 
     else:
-        print('------------------------')
-        print('type C')
+        print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
+        print(bcolors.HEADER + 'type C' + bcolors.ENDC)
         # print(trackList)
-        print(str(len(trackList)) + ' total songs')
+        print(bcolors.OKGREEN + str(len(trackList)) + ' total songs' + bcolors.ENDC)
         sp.user_playlist_add_tracks(username, inputPlaylistURI, trackList)
-        print('added ' + str(len(trackList)) + ' songs from backup')
-        print('------------------------')
+        print(bcolors.OKGREEN + 'added ' + str(len(trackList)) + ' songs from backup' + bcolors.ENDC)
+        print(bcolors.OKCYAN + '------------------------' + bcolors.ENDC)
 
-
-
+    
 
 if __name__ == "__main__":
-    token=getToken()
-    sp = spotipy.Spotify(auth=token)
-    current = sp.current_playback()
-
-    #inputPlaylistURI = input("input spotify playlist URI: ")
-    inputPlaylistURI = PLAYLIST_URI
     
     while True:    
-        # gets playlist data
+        token=getToken()
+        sp = spotipy.Spotify(auth=token)
+        
+        #inputPlaylistURI = input("input spotify playlist URI: ")
+        inputPlaylistURI = PLAYLIST_URI
+        
+    
+    #    try:
+          # gets playlist data
         playlistTracks = get_playlist_tracks(USERNAME,inputPlaylistURI)
         results = sp.playlist(inputPlaylistURI)
             
@@ -95,10 +109,10 @@ if __name__ == "__main__":
                     trackURI = i['track']['uri']
                     trackAdder = i['added_by']['id']
                     trackName = str(i['track']['name']) + ' - ' + str(i['track']['artists'][0]['name'])
-                    print(trackName + ' - ' + trackURI + ' - ' + trackAdder)
+                    #print(trackName + ' - ' + trackURI + ' - ' + trackAdder)
                     trackArray=[trackURI]
                     sp.user_playlist_remove_all_occurrences_of_tracks(user=trackAdder, playlist_id=inputPlaylistURI, tracks=trackArray)
-                    print('\"' + trackName + '\" that was added by \"' + trackAdder + '\" was removed')
+                    print(bcolors.FAIL + '\"' + trackName + '\" that was added by \"' + trackAdder + '\" was removed' + bcolors.ENDC)
     
             # builds dictionary with the most recent list of tracks
             updatedPlaylistTracks = get_playlist_tracks(USERNAME,inputPlaylistURI)
@@ -111,8 +125,8 @@ if __name__ == "__main__":
             # time to compare new filtered playlist with the old copy
             oldtrackDict = pickle.load(open(str(Path(__file__).resolve().parents[0]) + '/playlist' + str(results['id']) + '.pkl', 'rb'))
     
-            if len(oldtrackDict) - len(trackDict) > 10:
-                # playlist has lost more than 10 of its songs
+            if len(oldtrackDict) - len(trackDict) > 25:
+                # playlist has lost more than 25 of its songs
     
                 # list of old tracks
                 trackList = []
@@ -147,5 +161,7 @@ if __name__ == "__main__":
     
         else:
             print('not a collaborative playlist')
-        print('filtered @ '+str(datetime.datetime.now()))
-        time.sleep(3)
+        
+        est = timezone('EST')
+        print(bcolors.OKBLUE + 'filtered @ '+str(datetime.now(est)+timedelta(hours=1)) + bcolors.ENDC)
+        time.sleep(300)         
